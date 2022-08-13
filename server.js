@@ -298,9 +298,10 @@ app.put('/users/:id',(nodeReq, nodeRes)=>{
     const {id} = nodeReq.params
     const {admin,email,nom,prenom,dateNaissance,image,password,bloquer,userIsAdmin,prevEmail} = nodeReq.body
     var v_id = parseInt(id)
-    if( admin === 1 && typeof v_id === 'number' && nom && prenom && dateNaissance && validator.default.isEmail(prevEmail)
+    console.log(admin,email,nom,prenom,dateNaissance,password,typeof bloquer,typeof userIsAdmin,prevEmail)
+    if( admin == 1 && typeof v_id === 'number' && nom && prenom && dateNaissance && validator.default.isEmail(prevEmail)
     && validator.default.isEmail(email) 
-     && image && password && typeof bloquer === 'number' && typeof userIsAdmin === 'number' ){
+     && image && password && typeof parseInt(bloquer) === 'number' && typeof userIsAdmin === 'number' ){
         
         mysqlConnection.query("select id,email from users where email = ?",
                     [email],function(err,res){
@@ -367,12 +368,22 @@ app.put('/users/:id',(nodeReq, nodeRes)=>{
         })
     }
     else {
-        return nodeRes.status(400).json({
-            status : 'Users_ERROR',
-            message : 'Les données evoyer ne sont pas complet ',
-            
-            
-        })
+        if(admin != 1){
+            return nodeRes.status(400).json({
+                status : 'Users_ERROR',
+                message : 'Vous n\avez pas le droit pour modifier l\'utilisateur',
+                
+                
+            })
+        }
+        else {
+            return nodeRes.status(400).json({
+                status : 'Users_ERROR',
+                message : 'Les données evoyer ne sont pas complet ',
+                
+                
+            })
+        }
     }
 
 })
